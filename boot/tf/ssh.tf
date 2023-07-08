@@ -3,7 +3,7 @@ resource "tls_private_key" "tls_key" {
 }
 
 resource "gitlab_user_sshkey" "gitlab_root_ssh_key" {
-  user_id    = data.gitlab_user.user_root.id
+  user_id    = data.gitlab_user.root.id
   title      = "Terraform Generated Root SSH Key"
   key        = tls_private_key.tls_key.public_key_openssh
 }

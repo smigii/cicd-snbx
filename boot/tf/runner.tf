@@ -1,5 +1,5 @@
-resource "gitlab_runner" "runner_flavortown" {
-  registration_token = gitlab_group.group_flavortown.runners_token
+resource "gitlab_runner" "runner0" {
+  registration_token = gitlab_group.group0.runners_token
   description        = "terraform created runner"
   run_untagged       = true
 }
@@ -12,13 +12,13 @@ resource "local_file" "runner_config" {
   [[runners]]
     name = "Terraform Runner"
     url = "http://host.docker.internal/"
-    token = "${gitlab_runner.runner_flavortown.authentication_token}"
+    token = "${gitlab_runner.runner0.authentication_token}"
     executor = "docker"
     [runners.cache]
       MaxUploadedArchiveSize = 0
     [runners.docker]
       tls_verify = false
-      image = "smigii/runner-img:1.0"
+      image = "${var.runner_default_image}"
       privileged = false
       disable_entrypoint_overwrite = false
       oom_kill_disable = false

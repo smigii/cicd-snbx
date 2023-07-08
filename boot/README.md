@@ -8,23 +8,39 @@ This gets the GitLab instance and a GitLab Runner setup.
 
 Run...
 
-```docker compose up -d```
+```shell
+docker compose up -d
+```
 
-to get the instance and the runner going. Takes ~5 minutes for the instance to finish. Wait until `docker ps` shows healthy status for the instance.
+to get the GitLab Instance and the GitLab Runner going. Takes ~5 minutes for the instance to finish. Wait until `docker ps` shows
+healthy status for the instance before proceeding.
 
 ### ClickOps
 
-Create a god-mode personal token for root, this token will be used in the terraform
+Run...
 
-### GitLab initializing
-
-Go to the `tf` directory and update the variables in vars.tf, then...
-
-```
-terraform init
-terraform plan
-terraform apply
+```shell
+sudo docker exec -it gitlab grep 'Password:' /etc/gitlab/initial_root_password
 ```
 
-to apply some basic settings, create a god user and create a default group. You will need to apply twice (for some reason)
-to get the application settings to go through.
+To grab the initial password and login, using `root` as username. Reset the password after logging in to something shorter :)
+
+Create a god-mode personal token for root, this token will be used in the following Terraform.
+
+1. Click your avatar in top left corner
+2. Click `edit profile`
+3. Click `access tokens`
+4. select all the scopes, give it a name, hit create, then copy the token.
+
+### GitLab Initialization
+
+Update the environment variables in `variables.env`, then run `source variables.env`.
+
+Go to the `tf` and run...
+
+```shell
+terraform apply -auto-approve
+```
+
+This will set up a GitLab runner, a group and project with a test repository and pipeline, fully configured. The pipeline
+***should*** work out of the box.
