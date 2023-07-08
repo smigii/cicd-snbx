@@ -3,8 +3,6 @@ services:
   gitlab:
     image: 'gitlab/gitlab-ce:latest'
     container_name: 'gitlab'
-    env_file:
-      - 'docker.env'
     restart: always
     hostname: '$GITLAB_HOSTNAME'
     ports:
@@ -19,8 +17,6 @@ services:
   runner:
     image: 'gitlab/gitlab-runner:latest'
     container_name: 'gitlab-runner'
-    env_file:
-      - 'variables.env'
     restart: always
     depends_on:
       - gitlab
