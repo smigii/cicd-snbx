@@ -1,4 +1,5 @@
 **/.git
 **/.terraform**
+**/terraform.tfstate**
 terraform.env
 docker.env
