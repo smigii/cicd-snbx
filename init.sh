@@ -1,5 +1,11 @@
 #!/bin/bash
 
+echo "GitLab Hostname: Local IP address of your machine, 10.0.0.x or something.
+GitLab SSH port: which port the GitLab instance container will map to port 22
+GitLab Home Dir: Where on your local machine the GitLab instance and runner persistent files will live
+GitLab PAC
+"
+
 read -p '[1/4] GitLab Hostname: ' gitlab_hostname
 read -p '[2/4] GitLab SSH Port: ' gitlab_ssh_port
 read -p '[3/4] GitLab Home Dir: ' gitlab_home_dir

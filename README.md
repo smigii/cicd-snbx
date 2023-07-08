@@ -4,6 +4,16 @@ This gets the GitLab instance and a GitLab Runner setup.
 
 ## Steps
 
+### Initialize Environment Variables
+
+Run...
+
+```shell
+./init.sh
+```
+
+which will set up a Docker Compose environment variables file and a sourceable Terraform environment variables file.
+
 ### Docker compose
 
 Run...
