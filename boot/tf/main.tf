@@ -45,6 +45,20 @@ resource "gitlab_runner" "runner_flavortown" {
   run_untagged       = true
 }
 
+resource "local_file" "test_repo_seed" {
+  filename = "../../test/seed.sh"
+  content  = <<CONTENT
+  #!/bin/bash
+  
+  git init --initial-branch=main
+  git remote add origin ${gitlab_project.project_flavortown.http_url_to_repo}
+  git add ./*
+  git commit -m "Initial commit"
+  git push --set-upstream origin main
+
+  CONTENT
+}
+
 resource "local_file" "runner_config" {
   filename = "${var.gitlab_home}/runner/config.toml"
   content  = <<CONTENT
