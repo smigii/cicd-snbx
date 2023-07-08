@@ -18,8 +18,11 @@ echo "Sourced 'docker.env', your docker compose environment variables are set"
 # ======================================================================================================
 # DOCKER COMPOSE =======================================================================================
 
+set +e
 inst_health=$(docker ps | grep gitlab/gitlab-ce:latest | grep healthy)
 runner_health=$(docker ps | grep gitlab/gitlab-runner:latest | grep Up)
+set -e
+
 if [ -z "$inst_health" ] && [ -z "$runner_health" ]; then
   ./scripts/compose_up.sh
 else

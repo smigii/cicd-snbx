@@ -6,17 +6,13 @@ echo $1
 
 # Get the root password
 echo "Grabbing root password"
-password=$(docker exec -it gitlab grep 'Password:' /etc/gitlab/initial_root_password)
+password=$(docker exec -it gitlab grep 'Password:' /etc/gitlab/initial_root_password | awk '{print $2}' | tr -d '\r')
 echo Root Password: $password
 
 echo "Fetching sketchy token"
 sketchy_curl=$(curl --silent --request POST --url "http://$GITLAB_HOSTNAME/oauth/token" \
     --header 'Content-Type: application/json' \
-    --data '{
-    "grant_type": "password",
-    "username": "root",
-    "password": "GpUsgI0tip+jDCZ2FTXAl5lnhAKVwJecKyNupOzj/KM="
-    }')
+    --data "{ \"grant_type\": \"password\", \"username\": \"root\", \"password\": \"$password\" }")
 
 echo $sketchy_curl
 sketchy_token=$(echo $sketchy_curl | jq -r '.access_token')
