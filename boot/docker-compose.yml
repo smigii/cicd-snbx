@@ -1,0 +1,35 @@
+version: '3.6'
+services:
+  gitlab:
+    image: 'gitlab/gitlab-ce:latest'
+    container_name: 'gitlab'
+    env_file:
+      - 'variables.env'
+    restart: always
+    hostname: '$GITLAB_HOSTNAME'
+    ports:
+      - '80:80'
+      - '60443:443'
+      - '6022:22'
+    volumes:
+      - '$GITLAB_HOME/config:/etc/gitlab'
+      - '$GITLAB_HOME/logs:/var/log/gitlab'
+      - '$GITLAB_HOME/data:/var/opt/gitlab'
+    secrets:
+      - gitlab_root_password
+    shm_size: '256m'
+  runner:
+    image: 'gitlab/gitlab-runner:latest'
+    container_name: 'gitlab-runner'
+    env_file:
+      - 'variables.env'
+    restart: always
+    depends_on:
+      - gitlab
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - '$GITLAB_HOME/runner:/etc/gitlab-runner'
+
+secrets:
+  gitlab_root_password:
+    file: ./root_password.txt

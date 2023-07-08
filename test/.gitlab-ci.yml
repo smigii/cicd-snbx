@@ -1,0 +1,53 @@
+variables:
+  PROJECT_ID: "1"
+  TF_USERNAME: "gitlab_bot"
+  TF_PASSWORD: "glpat-ymez77xV1cSs_rPMgbjz"
+  TF_ADDRESS: "http://10.0.0.70/api/v4/projects/${PROJECT_ID}/terraform/state/the_state"
+
+stages:
+  - verify
+  - plan
+  - apply
+
+verify:
+  stage: verify
+  script:
+    - kubectl --help
+    - aws --version
+    - vault --version
+    - terraform --version
+    - helm --help
+
+terraform-plan:
+  stage: plan
+  before_script:
+    - >
+      echo $TF_ADDRESS
+
+      terraform init \
+        -backend-config="address=$TF_ADDRESS" \
+        -backend-config="lock_address=$TF_ADDRESS/lock" \
+        -backend-config="unlock_address=$TF_ADDRESS/lock" \
+        -backend-config="username=$TF_USERNAME" \
+        -backend-config="password=$TF_PASSWORD" \
+        -backend-config="lock_method=POST" \
+        -backend-config="unlock_method=DELETE" \
+        -backend-config="retry_wait_min=5"
+  script:
+    - terraform plan
+
+terraform-apply:
+  stage: apply
+  before_script:
+    - >
+      terraform init \
+        -backend-config="address=$TF_ADDRESS" \
+        -backend-config="lock_address=$TF_ADDRESS/lock" \
+        -backend-config="unlock_address=$TF_ADDRESS/lock" \
+        -backend-config="username=$TF_USERNAME" \
+        -backend-config="password=$TF_PASSWORD" \
+        -backend-config="lock_method=POST" \
+        -backend-config="unlock_method=DELETE" \
+        -backend-config="retry_wait_min=5"
+  script:
+    - terraform apply -auto-approve
