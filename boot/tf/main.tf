@@ -6,7 +6,7 @@ resource "gitlab_user" "user_bot" {
   name             = "john gitlab"
   username         = "gitlab_bot"
   password         = "pa55w0rd!"
-  email            = "gitlab_bot@fuck.you"
+  email            = "gitlab_bot@gl.bot"
   is_admin         = true
   projects_limit   = 99999
   can_create_group = true
@@ -31,6 +31,12 @@ resource "gitlab_group" "group_flavortown" {
   name        = "flavortown"
   path        = "flavortown"
   description = "ALL ABOARD"
+}
+
+resource "gitlab_project" "project_flavortown" {
+  name         = "flavortown"
+  description  = "The Flavortown Project"
+  namespace_id = gitlab_group.group_flavortown.id
 }
 
 resource "gitlab_runner" "runner_flavortown" {

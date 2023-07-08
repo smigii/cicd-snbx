@@ -26,4 +26,5 @@ terraform plan
 terraform apply
 ```
 
-to apply some basic settings, create a god user and create a default group.
+to apply some basic settings, create a god user and create a default group. You will need to apply twice (for some reason)
+to get the application settings to go through.
