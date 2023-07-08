@@ -1,30 +1,10 @@
 resource "gitlab_application_settings" "this" {
   signup_enabled = false
+  default_branch_protection = 0
 }
 
-resource "gitlab_user" "user_bot" {
-  name             = "john gitlab"
-  username         = "gitlab_bot"
-  password         = "pa55w0rd!"
-  email            = "gitlab_bot@gl.bot"
-  is_admin         = true
-  projects_limit   = 99999
-  can_create_group = true
-  reset_password   = false
-  skip_confirmation = true
-}
-
-resource "gitlab_personal_access_token" "gitlab_bot_token" {
-  user_id    = gitlab_user.user_bot.id
-  name       = "${gitlab_user.user_bot.name} personal access token"
-  expires_at = "2024-07-06"
-
-  scopes = ["api", "read_user", "read_api", "read_repository", "write_repository", "sudo", "admin_mode"]
-}
-
-output "gitlab_bot_token" {
-  value = gitlab_personal_access_token.gitlab_bot_token.token
-  sensitive = true
+data "gitlab_user" "user_root" {
+  username = "root"
 }
 
 resource "gitlab_group" "group_flavortown" {
@@ -39,48 +19,47 @@ resource "gitlab_project" "project_flavortown" {
   namespace_id = gitlab_group.group_flavortown.id
 }
 
-resource "gitlab_runner" "runner_flavortown" {
-  registration_token = gitlab_group.group_flavortown.runners_token
-  description        = "terraform created runner"
-  run_untagged       = true
+resource "gitlab_project_variable" "var_tf_user" {
+  project   = gitlab_project.project_flavortown.id
+  key       = "TF_USERNAME"
+  value     = data.gitlab_user.user_root.username
+  protected = false
+}
+
+resource "gitlab_project_variable" "var_tf_pass" {
+  project   = gitlab_project.project_flavortown.id
+  key       = "TF_PASSWORD"
+  value     = var.root_pac_token
+  protected = false
+}
+
+resource "gitlab_project_variable" "var_tf_addr" {
+  project   = gitlab_project.project_flavortown.id
+  key       = "TF_ADDRESS"
+  value     = "http://10.0.0.88/api/v4/projects/${gitlab_project.project_flavortown.id}/terraform/state/the_state"
+  protected = false
 }
 
 resource "local_file" "test_repo_seed" {
-  filename = "../../test/seed.sh"
+  filename = "test-src/seed.sh"
   content  = <<CONTENT
   #!/bin/bash
 
-  cd ../../test
-  git init --initial-branch=main
-  git remote add origin ${gitlab_project.project_flavortown.http_url_to_repo}
-  git add ./*
+  rm -rf .git
+  git init
+  git config --add --local core.sshCommand 'ssh -i key -p 6022'
+  git config user.name "${data.gitlab_user.user_root.name}"
+  git config user.email "${data.gitlab_user.user_root.email}"
+  git checkout -b main
+  git remote add origin ${gitlab_project.project_flavortown.ssh_url_to_repo}
+  git add .
   git commit -m "Initial commit"
-  git push --set-upstream origin main
+  git push -f origin main
 
   CONTENT
+
+  provisioner "local-exec" {
+    command = "cd test-src; ./seed.sh"
+  }
 }
 
-resource "local_file" "runner_config" {
-  filename = "${var.gitlab_home}/runner/config.toml"
-  content  = <<CONTENT
-  concurrent = 1
-
-  [[runners]]
-    name = "Terraform Runner"
-    url = "http://host.docker.internal/"
-    token = "${gitlab_runner.runner_flavortown.authentication_token}"
-    executor = "docker"
-    [runners.cache]
-      MaxUploadedArchiveSize = 0
-    [runners.docker]
-      tls_verify = false
-      image = "smigii/runner-img:1.0"
-      privileged = false
-      disable_entrypoint_overwrite = false
-      oom_kill_disable = false
-      disable_cache = false
-      volumes = ["/cache"]
-      shm_size = 0
-
-  CONTENT
-}

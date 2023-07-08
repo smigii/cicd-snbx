@@ -9,5 +9,5 @@ terraform {
 
 provider "gitlab" {
   base_url = "http://127.0.0.1"
-  token = var.gitlab_token
+  token = var.root_pac_token
 }

@@ -1,9 +1,3 @@
-variables:
-  PROJECT_ID: "1"
-  TF_USERNAME: "gitlab_bot"
-  TF_PASSWORD: "glpat-ymez77xV1cSs_rPMgbjz"
-  TF_ADDRESS: "http://10.0.0.70/api/v4/projects/${PROJECT_ID}/terraform/state/the_state"
-
 stages:
   - verify
   - plan
