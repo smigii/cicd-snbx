@@ -49,7 +49,8 @@ resource "local_file" "test_repo_seed" {
   filename = "../../test/seed.sh"
   content  = <<CONTENT
   #!/bin/bash
-  
+
+  cd ../../test
   git init --initial-branch=main
   git remote add origin ${gitlab_project.project_flavortown.http_url_to_repo}
   git add ./*
