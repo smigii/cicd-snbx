@@ -7,12 +7,13 @@ services:
     hostname: '$GITLAB_HOSTNAME'
     ports:
       - '80:80'
-      - '60443:443'
-      - '6022:22'
+      - '443:443'
+      - '$GITLAB_SSH_PORT:22'
     volumes:
       - '$GITLAB_HOME/config:/etc/gitlab'
       - '$GITLAB_HOME/logs:/var/log/gitlab'
       - '$GITLAB_HOME/data:/var/opt/gitlab'
+      - './ssl:/etc/gitlab/ssl'
     shm_size: '256m'
   runner:
     image: 'gitlab/gitlab-runner:latest'

@@ -16,6 +16,11 @@ source docker.env
 echo "Sourced 'docker.env', your docker compose environment variables are set"
 
 # ======================================================================================================
+# SSL ==================================================================================================
+
+mkdir -p ssl
+
+# ======================================================================================================
 # DOCKER COMPOSE =======================================================================================
 
 set +e
@@ -24,6 +29,7 @@ runner_health=$(docker ps | grep gitlab/gitlab-runner:latest | grep Up)
 set -e
 
 if [ -z "$inst_health" ] && [ -z "$runner_health" ]; then
+  rm -rf terraform.env
   ./scripts/compose_up.sh
 else
   echo "GitLab instance healthy, GitLab runner up, skipping Docker Compose"

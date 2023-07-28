@@ -16,9 +16,9 @@ echo "Creating $gitlab_home_dir if needed"
 mkdir -p $gitlab_home_dir
 
 cat <<EOT > docker.env
-export GITLAB_HOME=$HOME/gitlab
-export GITLAB_HOSTNAME="10.0.0.88"
-export GITLAB_SSH_PORT=6022
+export GITLAB_HOME=$gitlab_home_dir
+export GITLAB_HOSTNAME="$gitlab_hostname"
+export GITLAB_SSH_PORT=$gitlab_ssh_port
 EOT
 
 echo "Created 'docker.env', your docker compose environment variables file is ready"
